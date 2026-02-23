@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="si">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="theme-color" content="#E11D48"/>
+  <title>🔐 ඇතුල්වීම - Transport Management</title>
+  <link rel="stylesheet" href="assets/styles.css"/>
+  <script src="assets/config.js"></script>
+  <script src="assets/app.js"></script>
+  <style>
+    /* Enhanced login page styles */
+    .login-wrapper {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .login-card {
+      width: 100%;
+      max-width: 480px;
+      animation: fadeInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .logo-section {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .logo-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      border-radius: var(--r-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      box-shadow: var(--glow-brand), var(--shadow-lg);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+    
+    .logo-title {
+      font-size: 28px;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--text), var(--muted));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin: 0;
+    }
+    
+    .logo-subtitle {
+      color: var(--muted);
+      margin-top: 8px;
+      font-size: 14px;
+    }
+    
+    .input-group {
+      margin-bottom: 18px;
+    }
+    
+    .input-with-icon {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted-2);
+      font-size: 18px;
+      pointer-events: none;
+    }
+    
+    .input-with-icon input {
+      padding-left: 48px;
+    }
+    
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 16px 0;
+      font-size: 14px;
+    }
+    
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+    
+    .forgot-link {
+      color: var(--brand);
+      font-weight: 600;
+      transition: opacity 0.2s;
+    }
+    
+    .forgot-link:hover {
+      opacity: 0.8;
+    }
+    
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 24px 0;
+      color: var(--muted-2);
+      font-size: 14px;
+    }
+    
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border);
+    }
+    
+    .divider span {
+      padding: 0 16px;
+    }
+    
+    .register-prompt {
+      text-align: center;
+      margin-top: 24px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+    
+    .register-link {
+      color: var(--brand);
+      font-weight: 700;
+      text-decoration: none;
+    }
+    
+    .register-link:hover {
+      text-decoration: underline;
+    }
+    
+    @media(max-width: 640px) {
+      .logo-icon {
+        width: 64px;
+        height: 64px;
+        font-size: 32px;
+      }
+      
+      .logo-title {
+        font-size: 24px;
+      }
+    }
+  /* Password reset modal */
+.reset-modal{ position:fixed; inset:0; z-index:9999; display:flex; align-items:center; justify-content:center; padding:16px; }
+.reset-backdrop{ position:absolute; inset:0; background:rgba(0,0,0,.45); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+.reset-dialog{ position:relative; width:100%; max-width:520px; padding:16px 18px; }
+.reset-head{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.reset-head h3{ margin:0; font-size:18px; }
+.reset-grid{ display:grid; gap:12px; }
+.reset-actions{ display:flex; gap:10px; justify-content:flex-end; margin-top:10px; flex-wrap:wrap; }
+.hint{ color: var(--muted); font-size: 13px; }
+.orline{ display:flex; align-items:center; gap:10px; color:var(--muted-2); font-size:13px; }
+.orline::before, .orline::after{ content:""; height:1px; background:var(--border); flex:1; }
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="inner">
+    <div class="brand">
+      <span class="dot"></span> 
+      ප්‍රවාහන කළමණාකරණ පද්ධතිය
+    </div>
+    <div class="nav">
+      <a class="btn ghost" href="index.html">🏠 Home</a>
+      <a class="btn" href="register.html">ලියාපදිංචි වන්න</a>
+    </div>
+  </div>
+</div>
+
+<div class="login-wrapper">
+  <div class="login-card">
+    
+    <!-- Logo Section -->
+    <div class="logo-section">
+      <div class="logo-icon">🚌</div>
+      <h1 class="logo-title">Welcome Back</h1>
+      <p class="logo-subtitle">ඔබගේ ගිණුමට ඇතුල් වන්න</p>
+    </div>
+    
+    <!-- Login Form Card -->
+    <div class="card elevated">
+      
+      <!-- Error Message -->
+      <div id="msg" class="alert error hidden"></div>
+      
+      <!-- Email Input -->
+      <div class="input-group">
+        <label>📧 විද්‍යුත් තැපෑල</label>
+        <div class="input-with-icon">
+          <span class="input-icon">✉️</span>
+          <input 
+            id="email" 
+            type="email" 
+            placeholder="name@example.com"
+            autocomplete="email"
+            autofocus
+          />
+        </div>
+      </div>
+      
+      <!-- Password Input -->
+      <div class="input-group">
+        <label>🔒 මුරපදය</label>
+        <div class="input-with-icon">
+          <span class="input-icon">🔑</span>
+          <input 
+            id="password" 
+            type="password" 
+            placeholder="••••••••"
+            autocomplete="current-password"
+          />
+        </div>
+      </div>
+      
+      <!-- Remember & Forgot -->
+      <div class="remember-forgot">
+        <label class="remember-me">
+          <input type="checkbox" id="remember" />
+          <span>මතක තබා ගන්න</span>
+        </label>
+        <a href="#" class="forgot-link">මුරපදය අමතකද?</a>
+      </div>
+      
+      <!-- Login Button -->
+      <button class="btn btn-primary" id="btnLogin" style="width:100%; justify-content:center; margin-top:8px;">
+        🔓 ඇතුල් වන්න
+      </button>
+      
+      <!-- Divider -->
+      <div class="divider">
+        <span>හෝ</span>
+      </div>
+      
+      <!-- Register Prompt -->
+      <div class="register-prompt">
+        ගිණුමක් නැද්ද? 
+        <a href="register.html" class="register-link">දැන් ලියාපදිංචි වන්න →</a>
+      </div>
+      
+    </div>
+    
+    <!-- Footer Links -->
+    <div style="text-align:center; margin-top:24px; color:var(--muted-2); font-size:13px;">
+      <a href="privacy.html" style="color:inherit; margin:0 12px;">Privacy Policy</a>
+      <a href="data-protection.html" style="color:inherit; margin:0 12px;">Data Protection</a>
+      <a href="about.html" style="color:inherit; margin:0 12px;">About</a>
+    </div>
+    
+  </div>
+</div>
+
+<!-- Password reset modal -->
+<div id="resetModal" class="reset-modal hidden" aria-hidden="true">
+  <div class="reset-backdrop" id="resetBackdrop"></div>
+  <div class="card elevated reset-dialog">
+    <div class="reset-head">
+      <h3>🔁 මුරපදය නැවත සකසන්න</h3>
+      <button class="btn ghost small" id="resetClose">✖</button>
+    </div>
+
+    <div id="resetMsg" class="alert error hidden" style="margin-bottom:10px;"></div>
+
+    <div id="resetStep1" class="reset-grid">
+      <div class="hint">Email එක මතක නම් Email දාන්න. Email අමතක නම් Emp No දාන්න (ඔබගේ account එකට අදාල email එකට OTP යවයි).</div>
+
+      <div class="input-group" style="margin:0;">
+        <label>📧 Email</label>
+        <input id="resetEmail" type="email" placeholder="name@example.com" autocomplete="email"/>
+      </div>
+
+      <div class="orline"><span>හෝ</span></div>
+
+      <div class="input-group" style="margin:0;">
+        <label>🆔 Emp No</label>
+        <input id="resetEmpNo" type="text" placeholder="EMP001" autocomplete="off"/>
+      </div>
+
+      <div class="reset-actions">
+        <button class="btn secondary" id="btnSendOtp">📨 OTP යවන්න</button>
+      </div>
+    </div>
+
+    <div id="resetStep2" class="reset-grid hidden">
+      <div class="hint">OTP එක මිනිත්තු 5ක් වලංගුයි. දවසට ඉල්ලිය හැක්කේ වාර 3ක් පමණි.</div>
+
+      <div class="input-group" style="margin:0;">
+        <label>🔢 OTP (6 අංක)</label>
+        <input id="resetOtp" type="text" inputmode="numeric" maxlength="6" placeholder="123456" autocomplete="one-time-code"/>
+      </div>
+
+      <div class="input-group" style="margin:0;">
+        <label>🔒 නව මුරපදය</label>
+        <input id="resetNewPass" type="password" placeholder="අවමයෙන් අකුරු 6ක්" autocomplete="new-password"/>
+      </div>
+
+      <div class="input-group" style="margin:0;">
+        <label>🔒 නව මුරපදය (තහවුරු කරන්න)</label>
+        <input id="resetNewPass2" type="password" placeholder="නැවත ටයිප් කරන්න" autocomplete="new-password"/>
+      </div>
+
+      <div class="reset-actions">
+        <button class="btn ghost" id="btnResendOtp">↻ OTP නැවත</button>
+        <button class="btn secondary" id="btnDoReset">✅ Reset</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Forgot password modal
+const resetModal = document.getElementById("resetModal");
+const resetMsg = document.getElementById("resetMsg");
+const resetStep1 = document.getElementById("resetStep1");
+const resetStep2 = document.getElementById("resetStep2");
+const resetEmail = document.getElementById("resetEmail");
+const resetEmpNo = document.getElementById("resetEmpNo");
+const resetOtp = document.getElementById("resetOtp");
+const resetNewPass = document.getElementById("resetNewPass");
+const resetNewPass2 = document.getElementById("resetNewPass2");
+
+// Store only the identifier that the user used (email OR emp_no)
+let resetIdentifier = {};
+
+function openResetModal(){
+  resetMsg.classList.add("hidden");
+  resetMsg.textContent = "";
+  resetStep2.classList.add("hidden");
+  resetStep1.classList.remove("hidden");
+  resetOtp.value = "";
+  resetNewPass.value = "";
+  resetNewPass2.value = "";
+  resetEmail.value = document.getElementById("email").value.trim();
+  resetEmpNo.value = "";
+  resetModal.classList.remove("hidden");
+  resetModal.setAttribute("aria-hidden", "false");
+  resetEmail.focus();
+}
+
+function closeResetModal(){
+  resetModal.classList.add("hidden");
+  resetModal.setAttribute("aria-hidden", "true");
+}
+
+function showResetError(message){
+  resetMsg.textContent = "❌ " + (message || "දෝෂයක් ඇත");
+  resetMsg.classList.remove("hidden");
+}
+
+document.querySelector(".forgot-link").addEventListener("click", (e) => {
+  e.preventDefault();
+  openResetModal();
+});
+
+document.getElementById("resetClose").addEventListener("click", (e) => {
+  e.preventDefault();
+  closeResetModal();
+});
+
+document.getElementById("resetBackdrop").addEventListener("click", closeResetModal);
+
+async function requestOtp(){
+  resetMsg.classList.add("hidden");
+  const email = resetEmail.value.trim();
+  const emp_no = resetEmpNo.value.trim();
+  if(!email && !emp_no) return showResetError("Email හෝ Emp No එකක් ඇතුල් කරන්න.");
+
+  // Prefer email if both provided
+  const payload = email ? { email } : { emp_no };
+  // IMPORTANT: do not keep empty-string fields, backend validates formats
+  resetIdentifier = payload;
+
+  const btn = document.getElementById("btnSendOtp");
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = "⏳ යවමින්...";
+  try{
+    await api("/auth/password-reset/request", { method:"POST", body: JSON.stringify(payload) });
+    toast("📨 OTP යවලා තියෙනවා");
+    resetStep1.classList.add("hidden");
+    resetStep2.classList.remove("hidden");
+    resetOtp.focus();
+  }catch(e){
+    showResetError(e.message);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+}
+
+async function doReset(){
+  resetMsg.classList.add("hidden");
+  const otp = resetOtp.value.trim();
+  const p1 = resetNewPass.value;
+  const p2 = resetNewPass2.value;
+
+  if(!otp || !/^\d{6}$/.test(otp)) return showResetError("OTP එක 6 අංකයක් විය යුතුයි.");
+  if(!p1 || p1.length < 6) return showResetError("නව මුරපදය අවමයෙන් අකුරු 6ක් විය යුතුයි.");
+  if(p1 !== p2) return showResetError("නව මුරපද දෙක එකට ගැලපෙන්නේ නැහැ.");
+
+  const payload = Object.assign({}, resetIdentifier, { otp, new_password: p1 });
+
+  const btn = document.getElementById("btnDoReset");
+  btn.disabled = true;
+  const old = btn.textContent;
+  btn.textContent = "⏳ සකසමින්...";
+  try{
+    await api("/auth/password-reset/confirm", { method:"POST", body: JSON.stringify(payload) });
+    toast("✅ මුරපදය සාර්ථකව වෙනස් වුණා");
+    closeResetModal();
+    // Focus password field for login
+    document.getElementById("password").focus();
+  }catch(e){
+    showResetError(e.message);
+  }finally{
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+}
+
+document.getElementById("btnSendOtp").addEventListener("click", (e) => { e.preventDefault(); requestOtp(); });
+document.getElementById("btnResendOtp").addEventListener("click", (e) => { e.preventDefault(); requestOtp(); });
+document.getElementById("btnDoReset").addEventListener("click", (e) => { e.preventDefault(); doReset(); });
+
+// Enter key support
+document.getElementById("email").addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') document.getElementById("password").focus();
+});
+
+document.getElementById("password").addEventListener('keypress', (e) => {
+  if(e.key === 'Enter') document.getElementById("btnLogin").click();
+});
+
+// Login handler
+document.getElementById("btnLogin").onclick = async ()=>{
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const msg = document.getElementById("msg");
+  const btn = document.getElementById("btnLogin");
+  
+  // Validation
+  if(!email || !password) {
+    msg.textContent = "⚠️ කරුණාකර සියලු තොරතුරු පුරවන්න";
+    msg.classList.remove("hidden");
+    return;
+  }
+  
+  msg.classList.add("hidden");
+  btn.disabled = true;
+  btn.textContent = "⏳ පිවිසෙමින්...";
+  
+  try{
+    const d = await api("/auth/login", { 
+      method:"POST", 
+      body: JSON.stringify({ email, password }) 
+    });
+    
+    setToken(d.token);
+    
+    // Save remember me preference
+    if(document.getElementById("remember").checked) {
+      localStorage.setItem("rememberedEmail", email);
+    }
+    
+    const me = await loadMe();
+    const role = me.me && me.me.role;
+    
+    // Show success
+    toast("✅ සාදරයෙන් පිළිගනිමු!");
+    
+    // Redirect based on role
+    setTimeout(() => {
+      if(role==="ADMIN") location.href="admin.html";
+      else if(role==="HOD") location.href="hod.html";
+      else if(role==="TA") location.href="ta.html";
+      else if(role==="HR") location.href="hr.html";
+      else if(role==="EMP") location.href="emp.html";
+      else if(role==="PLANNING") location.href="planning.html";
+      else location.href="index.html";
+    }, 500);
+    
+  }catch(e){
+    msg.textContent = "❌ " + (e.message || "ඇතුල් වීම අසාර්ථකයි. කරුණාකර නැවත උත්සාහ කරන්න.");
+    msg.classList.remove("hidden");
+    btn.disabled = false;
+    btn.textContent = "🔓 ඇතුල් වන්න";
+  }
+};
+
+// Load remembered email
+window.addEventListener('DOMContentLoaded', () => {
+  const remembered = localStorage.getItem("rememberedEmail");
+  if(remembered) {
+    document.getElementById("email").value = remembered;
+    document.getElementById("remember").checked = true;
+    document.getElementById("password").focus();
+  }
+});
+</script>
+
+</body>
+</html>
