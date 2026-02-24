@@ -51,13 +51,13 @@
 
     <div class="row">
       <div>
-        <label>පෙරනිමි රූට්</label>
-        <select id="eRoute"></select>
+        <label>බහින තැන (Place)</label>
+        <input id="ePlaceSearch" placeholder="Town/Village (eg: Kalegana, Pilana...)" oninput="placeSuggest('ePlaceSearch','ePlaceSug','ePlaceId')" />
+        <input id="ePlaceId" type="hidden" />
+        <div id="ePlaceSug" class="card" style="display:none; padding:8px; margin-top:6px;"></div>
+        <div class="small">මෙ තැන select කලොත් vehicle auto-grouping එක මේ තැනෙන් (Places table) ගන්නවා.</div>
       </div>
-      <div>
-        <label>Default ග්‍රාම</label>
-        <select id="eSub"></select>
-      </div>
+      <div></div>
     </div>
 
     <div class="row">
@@ -111,14 +111,11 @@
       <div>
         <label>Employee Search</label>
         <input id="selSearch" placeholder="filter employees..." oninput="renderSelectEmployees()" />
-        <div class="small">Tick කරලා select කරලා route/sub route override කරන්න පුළුවන්.</div>
+        <div class="small">Select employees. Vehicle auto-grouping එක employee එකේ Place අනුව හැදේ.</div>
       </div>
       <div>
-        <label>Persist changes to Employee defaults?</label>
-        <select id="persistMode">
-          <option value="NO">No (only for this request)</option>
-          <option value="YES">Yes (update employee default route/sub too)</option>
-        </select>
+        <label>&nbsp;</label>
+        <div class="small">Route/Sub-route manual override අවශ්‍ය නෑ (auto).</div>
       </div>
     </div>
 

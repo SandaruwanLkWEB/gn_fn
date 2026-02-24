@@ -16,6 +16,34 @@
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    .hidden { display: none !important; }
+    .suggestions {
+      position: absolute;
+      z-index: 20;
+      left: 0;
+      right: 0;
+      top: calc(100% + 6px);
+      background: rgba(18, 24, 40, 0.98);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 12px;
+      max-height: 240px;
+      overflow: auto;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+    }
+    .suggestions button {
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      background: transparent;
+      color: inherit;
+      border: 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .suggestions button:last-child { border-bottom: 0; }
+    .suggestions button:hover { background: rgba(255,255,255,0.06); }
+    .suggest-title { font-weight: 700; }
+    .suggest-sub { opacity: 0.8; font-size: 12px; }
   </style>
 </head>
 <body>
@@ -83,6 +111,20 @@
         <select id="department_id" required>
           <option value="">⏳ පූරණය වෙමින්...</option>
         </select>
+
+        <label>📍 බහින තැන (Place)</label>
+        <div class="field" style="position:relative;">
+          <input
+            id="drop_place_query"
+            type="text"
+            placeholder="උදා: Kalegana / Kuruwaththa / Pilana..."
+            autocomplete="off"
+            required
+          />
+          <input id="drop_place_id" type="hidden" />
+          <div id="drop_place_suggestions" class="suggestions hidden"></div>
+          <small class="muted">ලැයිස්තුවෙන් තෝරන්න (ඉක්මන් සෙවීම).</small>
+        </div>
         
         <label>🔒 මුරපදය</label>
         <input 
@@ -162,12 +204,66 @@
   }
 })();
 
+// --- Places search (public) ---
+const placeQuery = document.getElementById("drop_place_query");
+const placeId = document.getElementById("drop_place_id");
+const placeSuggest = document.getElementById("drop_place_suggestions");
+let placeTimer = null;
+
+function clearPlaceSuggest() {
+  placeSuggest.innerHTML = "";
+  placeSuggest.classList.add("hidden");
+}
+
+async function searchPlaces(q) {
+  const res = await api(`/auth/places/search?q=${encodeURIComponent(q)}`);
+  return Array.isArray(res) ? res : [];
+}
+
+function renderPlaceSuggest(items) {
+  if (!items.length) return clearPlaceSuggest();
+  placeSuggest.innerHTML = items.map(p => {
+    const label = `${p.title || p.place_id}${p.address ? " — " + p.address : ""}`;
+    return `<div class="item" data-placeid="${p.place_id}" data-label="${escapeHtml(p.title || p.place_id)}">${escapeHtml(label)}</div>`;
+  }).join("");
+  placeSuggest.classList.remove("hidden");
+}
+
+placeQuery.addEventListener("input", () => {
+  const q = placeQuery.value.trim();
+  placeId.value = "";
+  if (placeTimer) clearTimeout(placeTimer);
+  if (q.length < 2) return clearPlaceSuggest();
+  placeTimer = setTimeout(async () => {
+    try {
+      const items = await searchPlaces(q);
+      renderPlaceSuggest(items.slice(0, 12));
+    } catch (e) {
+      clearPlaceSuggest();
+    }
+  }, 250);
+});
+
+placeSuggest.addEventListener("click", (e) => {
+  const el = e.target.closest(".item");
+  if (!el) return;
+  placeId.value = el.getAttribute("data-placeid") || "";
+  placeQuery.value = el.getAttribute("data-label") || placeQuery.value;
+  clearPlaceSuggest();
+});
+
+document.addEventListener("click", (e) => {
+  if (e.target === placeQuery || placeSuggest.contains(e.target)) return;
+  clearPlaceSuggest();
+});
+
 // Form validation helper
 function validateForm() {
   const emp_name = document.getElementById("emp_name").value.trim();
   const emp_no = document.getElementById("emp_no").value.trim();
   const email = document.getElementById("email").value.trim();
   const department_id = document.getElementById("department_id").value;
+  const drop_place_id = document.getElementById("drop_place_id").value.trim();
   const password = document.getElementById("password").value;
   const password_confirm = document.getElementById("password_confirm").value;
   
@@ -176,6 +272,7 @@ function validateForm() {
   if(!email) return "⚠️ කරුණාකර විද්‍යුත් තැපෑල ඇතුළත් කරන්න";
   if(!email.includes('@')) return "⚠️ වලංගු විද්‍යුත් තැපැල් ලිපිනයක් ඇතුළත් කරන්න";
   if(!department_id) return "⚠️ කරුණාකර දෙපාර්තමේන්තුව තෝරන්න";
+  if(!drop_place_id) return "⚠️ කරුණාකර බහින තැන (Place) තෝරන්න";
   if(!password) return "⚠️ කරුණාකර මුරපදයක් ඇතුළත් කරන්න";
   if(password.length < 6) return "⚠️ මුරපදය අවම අකුරු 6ක් විය යුතුය";
   if(password !== password_confirm) return "⚠️ මුරපද ගැලපෙන්නේ නැත. නැවත පරීක්ෂා කරන්න";
@@ -201,7 +298,8 @@ document.getElementById("btnReg").onclick = async ()=>{
     emp_no: document.getElementById("emp_no").value.trim(),
     email: document.getElementById("email").value.trim(),
     department_id: document.getElementById("department_id").value,
-    password: document.getElementById("password").value
+    password: document.getElementById("password").value,
+    drop_place_id: document.getElementById("drop_place_id").value || null
   };
   
   msg.className = "alert hidden";
@@ -225,6 +323,8 @@ document.getElementById("btnReg").onclick = async ()=>{
     document.getElementById("department_id").value = "";
     document.getElementById("password").value = "";
     document.getElementById("password_confirm").value = "";
+    document.getElementById("drop_place_query").value = "";
+    document.getElementById("drop_place_id").value = "";
     
     btn.textContent = "✅ ලියාපදිංචි වන්න";
     btn.disabled = false;
